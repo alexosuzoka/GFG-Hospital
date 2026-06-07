@@ -1,16 +1,39 @@
-const mongoose = require("mongoose");
-const { MONGO_URI } = require("./envConfig");
+const mongoclient = require('mongoose')
+const MONGO_URI  = require("./envConfig");
 
 const connectDB = async () => {
-	try {
-		await mongoose.connect(MONGO_URI, {
+	
+		const client = await mongoclient.connect(MONGO_URI, {
 			useNewUrlParser: true,
-			useUnifiedTopology: true,
-		});
-		console.log("MongoDB connected");
-	} catch (err) {
-		console.error(err.message);
-	}
-};
+			useUnifiedTopology: true,}
+			)
 
-module.exports = connectDB;
+			if (mongoclient.ConnectionStates.connected) {
+				console.log("MongoDB connected");
+				return 1;
+				
+				
+			}
+
+			else {
+				console.error("MongoDB connection failed");
+				return 0;
+			}
+
+
+
+			
+			
+	} 
+
+		 
+		 
+			
+		
+	
+
+module.exports = {
+	connectDB,
+	mongoclient
+		
+}
