@@ -2,22 +2,28 @@
 const dbsession = require("../db");
 const appointment = require("../models/Appointment");
 
-var results
 
+
+ const getallappointments = async () => {
 if (dbsession.connectDB() === 1) {
     console.log("Connected to DB, fetching appointments...");
-    results = appointment.find({});
+    try {
+       var result = await appointment.find({});
+    }
+    catch(err) {
+        console.error("Error fetching appointments: ", err);
+    }
     
-}
 
-else {
 
-    console.error("Failed to connect to DB, cannot fetch appointments.");
-    results = null;
+
 } 
+
+return result;
 dbsession.mongoclient.disconnect();
 
 module.exports = {
-      results
+      getallappointments
 }
 
+ }
