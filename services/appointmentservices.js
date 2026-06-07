@@ -4,7 +4,7 @@ const appointment = require("../models/Appointment");
 
 
 
- const getallappointments = async () => {
+const getallappointments = async () => {
 if (dbsession.connectDB() === 1) {
     console.log("Connected to DB, fetching appointments...");
     try {
@@ -20,7 +20,7 @@ if (dbsession.connectDB() === 1) {
 } 
 
 return result;
-dbsession.mongoclient.disconnect();
+
 
 module.exports = {
       getallappointments
