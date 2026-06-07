@@ -1,6 +1,8 @@
 const mongoclient = require('mongoose')
 const MONGO_URI  = require("./envConfig");
 
+
+// Establish a session to the MongoDB database
 const connectDB = async () => {
 	
 		const client = await mongoclient.connect(MONGO_URI, {
@@ -8,7 +10,7 @@ const connectDB = async () => {
 			useUnifiedTopology: true,}
 			)
 
-			if (mongoclient.ConnectionStates.connected) {
+			if (client.ConnectionStates.connected) {
 				console.log("MongoDB connected");
 				return 1;
 				
@@ -26,6 +28,12 @@ const connectDB = async () => {
 			
 	} 
 
+	const disconnectDB = async () => {
+		await mongoclient.disconnect( () => {
+			console.log("MongoDB disconnected");
+		});
+	}
+
 		 
 		 
 			
@@ -34,6 +42,6 @@ const connectDB = async () => {
 
 module.exports = {
 	connectDB,
-	mongoclient
+	disconnectDB
 		
 }
