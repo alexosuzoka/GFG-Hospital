@@ -7,6 +7,6 @@ const doctorSchema = new Schema({
     // Add more fields as needed
 });
 
-const Doctor = mongoose.model('Doctor', docctorSchema);
+const Doctor = mongoose.model('Doctor', doctorSchema);
 
 module.exports = Doctor;

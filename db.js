@@ -29,9 +29,10 @@ const connectDB = async () => {
 	} 
 
 	const disconnectDB = async () => {
-		await mongoclient.disconnect( () => {
-			console.log("MongoDB disconnected");
-		});
+		await mongoclient.disconnect().then( () => {
+             console.log("Database connection ended!!")
+		})
+		
 	}
 
 		 

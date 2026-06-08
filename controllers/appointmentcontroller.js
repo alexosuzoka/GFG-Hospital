@@ -1,13 +1,13 @@
-const dbclient = require("../db.js")
-const Appointment = require("../models/Appointment.js")
+const dbclient = require("../db")
+const Appointment = require("../models/Appointment")
 const express = require("express")
 const app = express()
 
+
+
+
 var req = app.request
 var res = app.response
-
-
-
 
 
 
@@ -16,20 +16,19 @@ const getAllAppointments = async (req, res) => {
         const connetionstatus = await dbclient.connectDB()
         if (connectionstatus === 1) {
             //call the model function to get all appointments
-            const appointments = Appointment.find({})
-            if (appointments != null) {
-                return res.status(200).json(appointments)
-                dbclient.disconnectDB()
-            }
-            else {
-                return res.status(404).json({ message: "No appointments found" })
-                dbclient.disconnectDB()
-            }
+            Appointment.find().then(result => {
+                res.status(200).json(result)
+            })
+            .catch(err =>{
+                res.status(404).message("No Appointments found")
+            })
+             dbclient.disconnectDB()
+
             }
             else {
                 
-                return res.status(500).json({ message: "Database connection failed" })
-                dbclient.disconnectDB()
+                 res.status(500).json({ message: "Database connection failed or no new field inputted" })
+                
 
             }
         
@@ -49,19 +48,19 @@ const getAllAppointments = async (req, res) => {
 
 
             newappointment.save().then(result => {
-                return res.status(201).json(result)
+             res.status(201).json(result)
                 dbclient.disconnectDB()
             })
             .catch(err => {
-                return res.status(500).json({ message: "Error creating appointment" })
+                 res.status(500).json({ message: "Error creating appointment" })
                 console.error(err)
             })
 
             }
 
             else {
-                return res.status(500).json("Database connection failed")
-                dbclient.disconnectDB()
+                 res.status(500).json({message: "Database connection failed"})
+                
             }
 
             }
@@ -69,37 +68,34 @@ const getAllAppointments = async (req, res) => {
             // update appointment data
             const updateAppointment = async (req, res) => {
                 if (req.params.id != null && dbclient.connectDB() === 1) {
-                    appointmentmodel.findByIdAndUpdate(req.params.id)
+                    Appointment.findByIdAndUpdate(req.params.id)
                     .then(result => {
-                        if(!result) {
-                            return res.status(404).json({message: "Appointment not found"})
-                            dbclient.disconnectDB();
-                        }
-                        else {
+                    
                             result.patientName = req.body.patientName
                             result.doctorName = req.bodydoctorName
                             result.date = req.body.date
 
                             result.save().then(updatedresult => {
-                                return res.status(200).message("Appointment updated successfully")
+                             res.status(200).message("Appointment updated successfully")
                                 .catch(err => {
                                     res.status(500).message("Appointment failed to upload")
                                     dbclient.disconnectDB()
                                 })
                             })
-                        }
-                    })
+                        })
+                }
 
-            }
+            
 
             // if unable to get parameters from request pipeline or failed database connection
-            else {
+                else {
                 res.status(500).message("Unable to get parameters or failed database connection")
-                console.error(res.error.message)
-            }
+                console.error(res.error)
+             }
             
         
         } 
+    
 
         const deleteappointments = async (req, res) => {
           // Verify the parameter id is available and database session state is active
@@ -115,5 +111,12 @@ const getAllAppointments = async (req, res) => {
 
           }
 
+        }
+
+        module.exports = {
+            getAllAppointments,
+            createAppointment,
+            updateAppointment,
+            deleteappointments
         }
 
