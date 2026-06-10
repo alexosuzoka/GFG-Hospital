@@ -6,15 +6,12 @@ const app = express()
 
 
 
-var req = app.request
-var res = app.response
 
 
 
-const getAllAppointments = async (req, res) => {
+
+const getAllAppointments = app.router.get('/', async (req, res) => {
     
-        const connetionstatus = await dbclient.connectDB()
-        if (connectionstatus === 1) {
             //call the model function to get all appointments
             Appointment.find().then(result => {
                 res.status(200).json(result)
@@ -24,26 +21,21 @@ const getAllAppointments = async (req, res) => {
             })
              dbclient.disconnectDB()
 
-            }
-            else {
-                
-                 res.status(500).json({ message: "Database connection failed or no new field inputted" })
-                
-
-            }
+            } ) 
+            
         
             
             
-        }
+        
 
 
-        const createAppointment = async (req, res) => {
-            if (req.body != null && dbclient.connectDB() === 1) {
+        const createAppointment = app.router.post('/add', async (req, res) => {
+            if (req.body != null) {
                 const { patientName, doctorName, date } = req.body
                 const newappointment = new Appointment({
                     patientName,
                     doctorName,
-                date
+                    date
             })
 
 
@@ -59,15 +51,15 @@ const getAllAppointments = async (req, res) => {
             }
 
             else {
-                 res.status(500).json({message: "Database connection failed"})
+                 res.status(500).json({message: "Missing required fields"})
                 
             }
 
-            }
+            }) 
 
             // update appointment data
-            const updateAppointment = async (req, res) => {
-                if (req.params.id != null && dbclient.connectDB() === 1) {
+            const updateAppointment = app.router.post('/update/:id', async (req, res) => {
+                if (req.params.id != null) {
                     Appointment.findByIdAndUpdate(req.params.id)
                     .then(result => {
                     
@@ -89,18 +81,18 @@ const getAllAppointments = async (req, res) => {
 
             // if unable to get parameters from request pipeline or failed database connection
                 else {
-                res.status(500).message("Unable to get parameters or failed database connection")
+                res.status(500).message("Unable to get required parameters")
                 console.error(res.error)
              }
             
         
-        } 
+        })
     
 
-        const deleteappointments = async (req, res) => {
+        const deleteappointments = app.router.delete('/delete/:id', async (req, res) => {
           // Verify the parameter id is available and database session state is active
 
-          if (req.params.id != null && dbclient.connectDB() === 1) {
+          if (req.params.id != null) {
            Appointment.findByIdAndDelete(req.params.id)
             .then(
                 () =>
@@ -111,7 +103,7 @@ const getAllAppointments = async (req, res) => {
 
           }
 
-        }
+        } )
 
         module.exports = {
             getAllAppointments,

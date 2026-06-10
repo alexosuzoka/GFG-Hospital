@@ -10,16 +10,16 @@ const connectDB = async () => {
 			useUnifiedTopology: true,}
 			)
 
-			if (client.ConnectionStates.connected) {
+			if (client.ConnectionStates.connected === 1) {
 				console.log("MongoDB connected");
-				return 1;
+				
 				
 				
 			}
 
 			else {
 				console.error("MongoDB connection failed");
-				return 0;
+				
 			}
 
 

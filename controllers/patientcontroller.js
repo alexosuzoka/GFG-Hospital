@@ -3,15 +3,13 @@ const Patient = require("../models/Patient")
 const express = require("express")
 const app = express()
 
-var req = app.request
-var res = app.response
 
 
 
 // Get all Patients record
 
-const getallpatients = async (req, res) => {
-    if (dbclient.connectDB() === 1) {
+const getallpatients = app.router.get('/', async (req, res) => {
+    
   await Patient.find().then(data => {
       res.status(200).json(data)
       .catch(err => {
@@ -20,17 +18,13 @@ const getallpatients = async (req, res) => {
     })
     dbclient.disconnectDB()
     }
-    else {
-        res.status(500).json({message: "Unable to connect to database"})
-    }
 
-    }
-
+ ) 
 
     //Add new Patient
 
-    const addnewpatient = async (req, res) => {
-      if (dbclient.connectDB() === 1) {
+    const addnewpatient = app.router.post('/add', async (req, res) => {
+      if (req.body != null) {
         const {name, age, gender} = req.body
         const newpatient = new Patient({name, age, gender});
         newpatient.save().then(() => {
@@ -43,14 +37,14 @@ const getallpatients = async (req, res) => {
       }
 
       else {
-        res.status(500).json({message: "Unable to connect to database"})
+        res.status(500).json({message: "Missing required fields"})
       }
     }
-
+) 
     //Update Patient Records
 
-    const updatepatient = async (req, res) => {
-       if (req.params.id && dbclient.connectDB === 1) {
+    const updatepatient = app.router.post('/update/:id', async (req, res) => {
+       if (req.params.id != null) {
         Patient.findById(req.params.id).then(patients => {
             patients.name = req.body.name
             patients.age = req.body.age
@@ -67,15 +61,15 @@ const getallpatients = async (req, res) => {
        }
 
        else {
-        return res.status(500).json({message: "Missing required field or Unable to connect to database"})
+        return res.status(500).json({message: "Missing required field"})
        }
-    }
+    }) 
 
 
     //Delete Patient by ID
 
-    const deletpatient = async (req,res) => {
-        if (req.params.id != null && dbclient.connectDB() === 1) {
+    const deletpatient = app.router.delete('/delete/:id', async (req,res) => {
+        if (req.params.id != null) {
         Patient.findByIdAndDelete(req.params.id).then(patient => {
     if (!patient) {
         return res.status(404).json({message: "No records found for patients"})
@@ -90,10 +84,10 @@ const getallpatients = async (req, res) => {
     }
     
     else {
-        return res.status(500).json({message: "Unable to connect to Database"})
+        return res.status(500).json({message: "Missing required field"})
     }
 
-    }
+    }) 
 
     module.exports = {
         getallpatients,

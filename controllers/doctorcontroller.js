@@ -3,16 +3,14 @@ const Doctor = require("../models/Doctor")
 const express = require("express")
 const app = express()
 
-var req = app.request
-var res = app.response
 
 
 
 
 // Get all doctors
 
-const getallDoctors = async( req, res) =>  {
-    if (dbclient.connectDB === 1) {
+const getallDoctors = app.router.get('/',  async( req, res) =>  {
+    
         //call the model function to get all appointments
         const doctors = await Doctor.find().then(doctors => {
             res.status(200).json(doctors)
@@ -21,17 +19,15 @@ const getallDoctors = async( req, res) =>  {
                 dbclient.disconnectDB()
             })
         })
-    }
+    
 
-    else {
-        res.status(500).message("Database Connection failed")
-    }
-}
+   
+})
 
 
-const createDoctor = async (req, res) => {
+const createDoctor = app.router.post('/add', async (req, res) => {
 
-     if (req.body != null && dbclient.connectDB() === 1) {
+     if (req.body != null) {
       const {name, specialty} = req.body
 
       const newdoctor = new Doctor({name, specialty})
@@ -46,14 +42,14 @@ const createDoctor = async (req, res) => {
        }
 
        else {
-        res.status(500).json({ message: "Database connection failed or no new field inputted" })
+        res.status(500).json({ message: "No field inputted" })
        }
-    }
+    } ) 
 
 
     // update Doctor records
-            const updateDoctor = async (req, res) => {
-                if (req.params.id != null && dbclient.connectDB() === 1) {
+            const updateDoctor = app.router.post('/update/:id', async (req, res) => {
+                if (req.params.id != null) {
                     await Doctor.findById(req.params.id)
                     .then(result => {
                     
@@ -71,16 +67,16 @@ const createDoctor = async (req, res) => {
                 }
 
                 else {
-                    res.status(500).json({message: "Missing required parameters || Unable to connect to Database"})
+                    res.status(500).json({message: "Missing required parameters"})
                 }
-            }
-
-
+            })
+            
+            
             //Delete Doctor by ID
 
-            const deletedoctor = async (req, res) => {
+            const deletedoctor = app.router.delete('/delete/:id', async (req, res) => {
 
-             if (req.params.id != null && dbclient.connectDB() === 1) {
+             if (req.params.id != null) {
                 Doctor.findByIdAndDelete(req.params.id).then(data => {
                     if (!data) {
                        return res.status(404).json({message: "No doctor record found"})
@@ -96,10 +92,10 @@ const createDoctor = async (req, res) => {
              
 
              else {
-                res.status(500).json({message: "Missing required fields || Unable to coonect to database"})
+                res.status(500).json({message: "Missing required fields"})
              }
 
-            }
+            }) 
         
 
             module.exports = {
